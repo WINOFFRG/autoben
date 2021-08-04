@@ -2,3 +2,7 @@ node_modules
 config.env
 AJ.py
 status.txt
+state.json
+TOKENS.txt
+cookies.json
+localstorage.json
