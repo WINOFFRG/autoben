@@ -1,9 +1,5 @@
 node_modules
-config.env
 AJ.py
-status.txt
+config.env
 state.json
-TOKENS.txt
-cookies.json
-localstorage.json
-responseData.json
+/temp
