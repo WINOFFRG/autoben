@@ -4,3 +4,5 @@ config.env
 state.json
 /temp
 responseData.json
+filtered*
+capture*
