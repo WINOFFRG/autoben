@@ -21,6 +21,3 @@ module.exports =  async function filterTeams(teams, blacklist){
             return resolve(data);
     })
 }
-
-
-// { name, id, channel}

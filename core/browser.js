@@ -36,7 +36,7 @@ async function initBrowser(){
       
     console.log("Signed In Successfully");
   
-    const response = await page.waitForResponse(response => response.url().includes('ttps://teams.microsoft.com/api/csa/api/v1/teams/users/me?isPrefetch=false&enableMembershipSummary=') && response.status() === 200);
+    const response = await page.waitForResponse(response => response.url().includes('https://teams.microsoft.com/api/csa/api/v1/teams/users/me?isPrefetch=false&enableMembershipSummary=') && response.status() === 200);
     const responseBody = (await response.body()).toString();
     console.log("Recieved Response");
     
