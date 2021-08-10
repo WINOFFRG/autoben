@@ -1,41 +1,82 @@
+const { chromium } = require('playwright');
+const dotenv = require('dotenv');
+const path = require('path');
 const fs = require('fs');
-const initBrowser = require('./core/browser');
-const filterTeams = require('./core/channels');
-const search = require('./core/searching');
+const openBrowser = require('./core/open-browser');
+const findTeamsNChannel = require('./core/find-teams');
+
+dotenv.config({path:  path.join( __dirname, '../config/config.env')});
+
+async function startBot(){
+
+    if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
+       return Promise.reject(new Error("Error: Email or Password is Empty!"));
+
+    // Define Browser
+    const browser = await chromium.launch({ 
+        headless: true,
+        channel: 'msedge',
+        devtools: true
+    });
+    
+    // Define Browser Properties
+    const context = await browser.newContext({
+        permissions: ['microphone','camera','geolocation'],
+        colorScheme: 'dark',
+        locale: 'en-US' ,
+        // storageState: '../config/state.json',
+    });
+
+    // Define Context    
+    await context.route('**/*', route => route.continue());
+    
+    // Setup Page
+    const page = await context.newPage();
+
+    return new Promise( (resolve, reject) => {
+        resolve(page);
+        reject(new Error("Unable to initialize Browser!"));
+    });
+}
+
+/* 👋 AutoBen - Bot Code start from Here down down 👇 */
 
 (async () => {
 
-    await initBrowser().then( (page) => {
-        readFile();
-        search(page);
+    const page = await startBot().then( page => {
 
-    });
+        console.log("Bot Initilized Succesfully!");
+        callOpenBrowser(page);
 
-    function readFile(){
-        
-        fs.readFile('./config/capture-api-response.json','utf-8', async function(err, jsonData){
-            if (err) throw err;    
-            var content = JSON.stringify(jsonData);
-            var data = JSON.parse(content);
-            // return await data;
-
-            printFilteredTeams(data);
+    }).catch( error => {
+            console.log(error.message);
         });
-    }
+
     
-    async function printFilteredTeams(data){
-        
-        filterTeams(data).then( (resp) => {
-            fs.writeFile('./config/filtered-teams.json', resp, (err) => {
-                if (err) throw err;
-                console.log('The file has been saved!');
-              });
-            console.log('handle success here');
-            console.log('Starting Searching');
-         }).catch((e) => {
-            console.log('handle error here: ', e.message)
-         })
+    async function callOpenBrowser(page){
+
+        await openBrowser(page).then( data => {
+            
+            console.log("Signed In Succesfully!");
+            searchTeams(data);
+
+        }).catch( error => {
+                console.log(error.message);
+            });
     }
 
-    readFile();
+
+    async function searchTeams(data){
+
+        if(process.env.syncTeams){
+            await findTeamsNChannel(data).then( () => {
+            
+            console.log("Teams and Channels Synced Successfully");
+
+            }).catch( error => {
+                console.log(error.message);
+            });
+        }
+    }
+
 })();

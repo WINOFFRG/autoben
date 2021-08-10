@@ -17,7 +17,7 @@ module.exports = async function openBrowser(page){
     const text = await page.innerText('.text-title');
     if(text === "Stay signed in?") await page.click('text=No');
 
-    /* Choose Account and Pae Timeout Missing */
+    /* Choose Account and Page Timeout Missing */
     
     // Capture teams API Request from MST
     page.setDefaultTimeout(60000);
