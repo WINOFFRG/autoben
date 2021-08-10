@@ -1,8 +1,27 @@
 {
+  "name": "autoben",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
+    "electron": "^13.1.9",
     "package.json": "^2.0.1",
     "playwright": "^1.13.1"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winoffrg/autoben.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/winoffrg/autoben/issues"
+  },
+  "homepage": "https://github.com/winoffrg/autoben#readme"
 }
