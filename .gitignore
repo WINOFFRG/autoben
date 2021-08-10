@@ -1,7 +1,7 @@
 node_modules
 AJ.py
 config.env
-state.json
+teams.json
 /temp
 responseData.json
 filtered*

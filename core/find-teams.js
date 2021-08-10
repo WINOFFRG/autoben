@@ -7,14 +7,33 @@ module.exports =  async function findTeamsNChannel(teams){
         
     for(var team in teams){
         Object.entries(teams[team]).forEach(
-            ([key, value]) => {
-                if(key === 'displayName' || key === 'id'){
+            ([key]) => {
+                if(key === 'displayName' || key === 'id' || key === 'channels'){
                     // console.log(value);
                 } 
-                 else {
+                 else
                     delete teams[team][key];
-                }
             });
+    }
+
+    for(var team in teams){
+        Object.entries(teams[team]).forEach(
+            ([key, value]) => {
+                if(key === 'channels'){
+                    for(var channel = 0; channel < value.length ; channel++){
+                        Object.entries(value[channel]).forEach(
+                            ([key]) => {
+                                if(key === 'displayName' || key === 'id'){
+                                    // console.log(value);
+                                } 
+                                else
+                                    delete value[channel][key];
+                            }
+                        )
+                    }
+                }
+            }
+        );
     }
 
     teams = JSON.stringify(teams);

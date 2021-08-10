@@ -45,7 +45,7 @@ async function startBot(){
 
     const page = await startBot().then( page => {
 
-        console.log("Bot Initilized Succesfully!");
+        console.log("Bot Initilized Succesfully 🤖 ");
         callOpenBrowser(page);
 
     }).catch( error => {
@@ -57,7 +57,7 @@ async function startBot(){
 
         await openBrowser(page).then( data => {
             
-            console.log("Signed In Succesfully!");
+            console.log("Signed In Succesfully 🔐 ");
             searchTeams(data);
 
         }).catch( error => {
@@ -68,15 +68,35 @@ async function startBot(){
 
     async function searchTeams(data){
 
+        if(data == undefined || data.length == 0) 
+            return new Error("⚠ There was a problem in reading Data");
+
         if(process.env.syncTeams){
             await findTeamsNChannel(data).then( () => {
+
+                console.log("Teams and Channels Synced Successfully 🧭");
+
+            }).catch(  error => {
+                    console.log(error);
+            });
+        } else{
+            //Do file reading and start searching for meetings    
+        }
+    }
+
+    /* This function is used to do I/O Operations without running the bot 🔋 */
+    async function tempReadFileAndFilter(){
+        
+        const data = fs.readFileSync('./config/teams.json',
+                                            {encoding:'utf8', flag:'r'});
+
+        searchTeams(data).then( () => {
             
-            console.log("Teams and Channels Synced Successfully");
+            console.log("Temp function Ran Successfully ✅");
 
             }).catch( error => {
                 console.log(error.message);
-            });
-        }
-    }
+        });
+    };
 
 })();
