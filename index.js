@@ -4,19 +4,22 @@ const path = require('path');
 const fs = require('fs');
 const openBrowser = require('./core/open-browser');
 const findTeamsNChannel = require('./core/find-teams');
+const searchMeetings = require('./core/search-meetings');
 
 dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
-async function startBot(){
+/* 👋 AutoBen - Bot Code start from Here down down 👇 */
 
-    if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
-       return Promise.reject(new Error("Error: Email or Password is Empty!"));
+(async () => {
+
+        if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
+        return Promise.reject(new Error("Error: Email or Password is Empty!"));
 
     // Define Browser
     const browser = await chromium.launch({ 
-        headless: true,
+        headless: false,
         channel: 'msedge',
-        devtools: true
+        devtools: false
     });
     
     // Define Browser Properties
@@ -33,31 +36,14 @@ async function startBot(){
     // Setup Page
     const page = await context.newPage();
 
-    return new Promise( (resolve, reject) => {
-        resolve(page);
-        reject(new Error("Unable to initialize Browser!"));
-    });
-}
-
-/* 👋 AutoBen - Bot Code start from Here down down 👇 */
-
-(async () => {
-
-    const page = await startBot().then( page => {
-
         console.log("Bot Initilized Succesfully 🤖 ");
         callOpenBrowser(page);
 
-    }).catch( error => {
-            console.log(error.message);
-        });
-
-    
     async function callOpenBrowser(page){
 
         await openBrowser(page).then( data => {
             
-            console.log("Signed In Succesfully 🔐 ");
+            console.log("Signed In Succesfully 🔐");
             searchTeams(data);
 
         }).catch( error => {
@@ -71,7 +57,7 @@ async function startBot(){
         if(data == undefined || data.length == 0) 
             return new Error("⚠ There was a problem in reading Data");
 
-        if(process.env.syncTeams){
+        if(Number(process.env.syncTeams)){
             await findTeamsNChannel(data).then( () => {
 
                 console.log("Teams and Channels Synced Successfully 🧭");
@@ -80,7 +66,17 @@ async function startBot(){
                     console.log(error);
             });
         } else{
-            //Do file reading and start searching for meetings    
+
+            var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
+            data = JSON.parse(data);
+            
+            await searchMeetings(data, page).then( () => {
+
+                console.log("Found Meetings 🤝");
+
+            }).catch(  error => {
+                    console.log(error);
+            });
         }
     }
 
