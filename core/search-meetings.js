@@ -1,12 +1,30 @@
-const fs = require('fs');
-const { resolve } = require('path');
+module.exports = async function searchMeetings(channel, page){
 
-module.exports = async function searchMeetings(teams, page){
+    await page.goto(`https://teams.microsoft.com/_#/school/conversations/${channel.displayName}?threadId=${channel.id}&ctx=channel`);
 
-    await page.goto('https://teams.microsoft.com/_#/school/conversations/aa?threadId=19:25bcecf8dae64023b13eeaac03b10094@thread.tacv2&ctx=channel');
+    /* NEED TO CHECK BELOW METHODS, STILL NOW SURE IF BELOW EVALUATION WORKS IN ALL CASES */
 
-    // await page.waitForTimeout(5000);  NEED TO CHECK BELOW METHO NEVERS FACES AN ISSUE
-    await page.waitForSelector('#app-messages-header >> :nth-match(div:has-text("Team"), 3)');
+    // await page.waitForTimeout(5000);  
+    // await page.waitForSelector('#app-messages-header >> :nth-match(div:has-text("Team"), 3)');
+    // document.querySelector('virtual-repeat').getAttribute('class').contains('ts-message-list')
+    
+    /* This evaluates f the middle section has loaded or not*/ 
+    
+    let loaded = false, loadTime = 0;
+    
+    while(loaded != true){
+
+        loadTime += 500;
+        await page.waitForTimeout(500);
+        loaded = await page.evaluate( () => {
+            return document.querySelector('message-list').querySelector('.vr-loadmore').classList.contains('hide')
+  
+        } );
+
+        if(loadTime > 10000){
+            return new Error('Timeout while loading chats ❌');
+        }
+    }
 
     const meetings = await page.evaluate( () => {
         

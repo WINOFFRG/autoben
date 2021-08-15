@@ -8,14 +8,14 @@ module.exports = async function openBrowser(page){
 
     await page.goto('https://teams.microsoft.com');
   
-    // await page.fill('[placeholder="Email, phone, or Skype"]', process.env.EMAIL);
-    // await page.click('text=Next');
+    await page.fill('[placeholder="Email, phone, or Skype"]', process.env.EMAIL);
+    await page.click('text=Next');
     
-    // await page.fill('[placeholder="Password"]', process.env.PASSWORD);
-    // await page.click('text=Sign in');
+    await page.fill('[placeholder="Password"]', process.env.PASSWORD);
+    await page.click('text=Sign in');
 
-    // const text = await page.innerText('.text-title');
-    // if(text === "Stay signed in?") await page.click('text=No');
+    const text = await page.innerText('.text-title');
+    if(text === "Stay signed in?") await page.click('text=No');
 
     /* Choose Account and Page Timeout Missing */
     
@@ -23,6 +23,7 @@ module.exports = async function openBrowser(page){
     page.setDefaultTimeout(60000);
     const response = await page.waitForResponse(response => response.url().includes('https://teams.microsoft.com/api/csa/api/v1/teams/users/me?isPrefetch=false&enableMembershipSummary=') && response.status() === 200);
     const responseBody = (await response.body()).toString();
+    console.log("Signed In Succesfully 🔐");
 
     return await new Promise( (resolve, reject) => {
         resolve(responseBody);

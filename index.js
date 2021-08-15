@@ -31,7 +31,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
         permissions: ['microphone','camera','geolocation'],
         colorScheme: 'dark',
         locale: 'en-US' ,
-        storageState: './config/state.json',
+        // storageState: './config/state.json',
     });
 
     // Define Context    
@@ -47,7 +47,6 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
         await openBrowser(page).then( data => {
             
-            console.log("Signed In Succesfully 🔐");
             searchTeams(data);
 
         }).catch( error => {
@@ -74,26 +73,24 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
             var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
             teams = JSON.parse(data);
             
-            // for(let team in teams){
+            for(let team in teams){
                 
-            //     console.log(`Started seaching in ${team.displayName} 🔍`);
-            //     const channels = team.channels;
+                const channels = teams[team].channels;
+                
+                for(let channel in channels){
+                    await searchMeetings(channels[channel], page).then( meetings => {
 
-            //     for(let channel in channels){
-            //         await searchMeetings(channel, page).then( meetings => {
-
-            //             if(meetings.length == 0) 
-            //                 console.log("No meetings were found in this team 🤞");
-            //             else{
-            //                 console.log("Found Meetings 🤝");
-            //                 console.log(meetings);
-            //             }
-            //         });
-            //     }
-            // }
+                        if(meetings.length != 0) 
+                        {
+                            console.log(`Found Meetings 🤝 in ${teams[team].displayName} 👉 ${channels[channel].displayName} channel`);
+                            console.log(meetings);
+                        }
+                    });
+                }
+            }
         }
 
-        await context.storageState({ path: './config/state.json' });
+        // await context.storageState({ path: './config/state.json' });
     }
 
     /* This function is used to do I/O Operations without running the bot 🔋 */
