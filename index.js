@@ -12,14 +12,18 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
 (async () => {
 
-        if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
-        return Promise.reject(new Error("Error: Email or Password is Empty!"));
+    if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
+    return Promise.reject(new Error("Error: Email or Password is Empty!"));
 
     // Define Browser
     const browser = await chromium.launch({ 
         headless: false,
         channel: 'msedge',
-        devtools: false
+        devtools: false,
+        viewport: {
+            width: 1366,
+            height: 768
+        }
     });
     
     // Define Browser Properties
@@ -27,7 +31,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
         permissions: ['microphone','camera','geolocation'],
         colorScheme: 'dark',
         locale: 'en-US' ,
-        // storageState: '../config/state.json',
+        storageState: './config/state.json',
     });
 
     // Define Context    
@@ -68,16 +72,28 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
         } else{
 
             var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
-            data = JSON.parse(data);
+            teams = JSON.parse(data);
             
-            await searchMeetings(data, page).then( () => {
+            // for(let team in teams){
+                
+            //     console.log(`Started seaching in ${team.displayName} 🔍`);
+            //     const channels = team.channels;
 
-                console.log("Found Meetings 🤝");
+            //     for(let channel in channels){
+            //         await searchMeetings(channel, page).then( meetings => {
 
-            }).catch(  error => {
-                    console.log(error);
-            });
+            //             if(meetings.length == 0) 
+            //                 console.log("No meetings were found in this team 🤞");
+            //             else{
+            //                 console.log("Found Meetings 🤝");
+            //                 console.log(meetings);
+            //             }
+            //         });
+            //     }
+            // }
         }
+
+        await context.storageState({ path: './config/state.json' });
     }
 
     /* This function is used to do I/O Operations without running the bot 🔋 */
