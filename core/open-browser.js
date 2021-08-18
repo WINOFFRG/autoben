@@ -23,8 +23,7 @@ module.exports = async function openBrowser(page){
     page.setDefaultTimeout(60000);
     const response = await page.waitForResponse(response => response.url().includes('https://teams.microsoft.com/api/csa/api/v1/teams/users/me?isPrefetch=false&enableMembershipSummary=') && response.status() === 200);
     const responseBody = (await response.body()).toString();
-    console.log("Signed In Succesfully 🔐");
-
+    
     return await new Promise( (resolve, reject) => {
         resolve(responseBody);
         reject(new Error("Unable to initialize Browser!"));
