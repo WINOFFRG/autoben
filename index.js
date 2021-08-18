@@ -89,7 +89,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
                         if(meetings.length != 0) 
                         {
                             console.log(`Found Meetings 🤝 in ${teams[team].displayName} 👉 ${channels[channel].displayName} channel`);
-                            console.log(meetings);
+                            // console.log(meetings);
                         
                             meeting = {
                                 pageUri : `https://teams.microsoft.com/_#/school/conversations/${channels[channel].displayName}?threadId=${channels[channel].id}&ctx=channel`,
