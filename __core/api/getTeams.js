@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const axios = require('axios');
+// const axios = require('axios');
 const fs = require('fs');
 
 dotenv.config({path: '../../config/config.env'});
