@@ -2,9 +2,14 @@ const { chromium } = require('playwright');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
+const chalk = require('chalk');
+const log = console.log;
+
 const openBrowser = require('./core/open-browser');
 const findTeamsNChannel = require('./core/find-teams');
 const searchMeetings = require('./core/search-meetings');
+const decideMeeting = require('./core/decide-meeting');
+const joinMeeting = require('./core/join-meeting');
 
 dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
@@ -17,13 +22,10 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
     // Define Browser
     const browser = await chromium.launch({ 
+        args: ["--start-maximized"],
         headless: false,
         channel: 'msedge',
-        devtools: false,
-        viewport: {
-            width: 1366,
-            height: 768
-        }
+        devtools: false
     });
     
     // Define Browser Properties
@@ -31,6 +33,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
         permissions: ['microphone','camera','geolocation'],
         colorScheme: 'dark',
         locale: 'en-US' ,
+        viewport: null,
         // storageState: './config/state.json',
     });
 
@@ -40,13 +43,14 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
     // Setup Page
     const page = await context.newPage();
 
-        console.log("Bot Initilized Succesfully 🤖 ");
+        log(chalk.blue.bold("Bot Initilized Succesfully 🤖 "));
         callOpenBrowser(page);
 
     async function callOpenBrowser(page){
 
         await openBrowser(page).then( data => {
             
+            log(chalk.green("Signed In Succesfully 🔐"));
             searchTeams(data);
 
         }).catch( error => {
@@ -72,11 +76,13 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
             var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
             teams = JSON.parse(data);
+            var allMeetings =[];
             
             for(let team in teams){
                 
                 const channels = teams[team].channels;
-                
+                let meeting;
+
                 for(let channel in channels){
                     await searchMeetings(channels[channel], page).then( meetings => {
 
@@ -84,28 +90,33 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
                         {
                             console.log(`Found Meetings 🤝 in ${teams[team].displayName} 👉 ${channels[channel].displayName} channel`);
                             console.log(meetings);
+                        
+                            meeting = {
+                                pageUri : `https://teams.microsoft.com/_#/school/conversations/${channels[channel].displayName}?threadId=${channels[channel].id}&ctx=channel`,
+                                meetings : meetings   
+                            }
                         }
                     });
+                
+                    if(meeting) allMeetings.push(meeting);
                 }
             }
-        }
 
+            passToLogic(allMeetings);
+        }
         // await context.storageState({ path: './config/state.json' });
     }
 
-    /* This function is used to do I/O Operations without running the bot 🔋 */
-    async function tempReadFileAndFilter(){
+    async function passToLogic(meetings){
         
-        const data = fs.readFileSync('./config/teams.json',
-                                            {encoding:'utf8', flag:'r'});
-
-        searchTeams(data).then( () => {
+        decideMeeting(meetings).then( decidedMeeting => {
             
-            console.log("Temp function Ran Successfully ✅");
+            log(chalk.cyanBright("Decided Meeting 🤓"));
+            joinMeeting(decidedMeeting, page);
 
-            }).catch( error => {
-                console.log(error.message);
-        });
-    };
+        }).catch( error => {
+                console.log(error)
+            });
+    }
 
 })();
