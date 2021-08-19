@@ -14,13 +14,6 @@ module.exports = async function joinMeeting(meeting, page){
 
     await joinBtn.click();
 
-    let callData = await page.locator("button[data-tid='prejoin-join-button']");
-    
-    if(!callData){
-        console.log("Could not find the call data");
-        return;
-    }
-
     let video_btn = await page.locator("toggle-button[data-tid='toggle-video']>div>button");
     let video_is_on = await video_btn.getAttribute("aria-pressed");
 

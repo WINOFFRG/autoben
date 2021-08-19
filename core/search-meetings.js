@@ -11,14 +11,15 @@ module.exports = async function searchMeetings(channel, page){
     /* This evaluates f the middle section has loaded or not*/ 
     
     let loaded = false, loadTime = 0;
-    
+
     while(loaded != true){
 
         loadTime += 500;
         await page.waitForTimeout(500);
         loaded = await page.evaluate( () => {
-            return document.querySelector('message-list').querySelector('.vr-loadmore').classList.contains('hide')
-  
+            return document.querySelector('message-list')
+                        .querySelector('.vr-loadmore')
+                            .classList.contains('hide');
         } );
 
         if(loadTime > 10000){

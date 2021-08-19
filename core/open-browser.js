@@ -29,3 +29,13 @@ module.exports = async function openBrowser(page){
         reject(new Error("Unable to initialize Browser!"));
     });
 }
+
+
+/* NOTES :
+
+Three test cases are left where bot can fail to Open the browser and login
+
+1. Get Window Application, Continue to Web App
+2. Ask again for our account Signin if already saved
+3. _---_
+*/
