@@ -15,7 +15,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
 /* 👋 AutoBen - Bot Code start from Here down down 👇 */
 
-(async () => {
+module.exports = async function init(){
 
     if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
     return Promise.reject(new Error("Error: Email or Password is Empty!"));
@@ -119,4 +119,4 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
             });
     }
 
-})();
+};
