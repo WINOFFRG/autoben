@@ -13,7 +13,7 @@ const joinMeeting = require('./core/join-meeting');
 
 dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
-/* 👋 AutoBen - Bot Code start from Here down down 👇 */
+/* 👋 AutoBen - Bot Code start from Here 👇 */
 
 module.exports = async function init(){
 
