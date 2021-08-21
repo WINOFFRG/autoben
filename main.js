@@ -2,7 +2,7 @@ const { _electron: electron } = require('playwright');
 
 (async () => {
   // Launch Electron app.
-  const electronApp = await electron.launch({ args: ['main.js'] });
+  const electronApp = await electron.launch({ args: ['main.js'], headless : false });
 
   // Evaluation expression in the Electron context.
   const appPath = await electronApp.evaluate(async ({ app }) => {
@@ -10,8 +10,8 @@ const { _electron: electron } = require('playwright');
     // the result of the require('electron') in the main app script.
     return app.getAppPath();
   });
-//   console.log(appPath);
-//   electron.se/
+  console.log(appPath);
+
   // Get the first window that the app opens, wait if necessary.
   const window = await electronApp.firstWindow();
   // Print the title.
