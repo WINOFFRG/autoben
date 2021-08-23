@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const init = require('./index.js')
 
-
 app.get('/start', async (req, res) => {
     console.log("GET Request Received");
     try {

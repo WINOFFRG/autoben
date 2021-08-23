@@ -14,8 +14,7 @@ const joinMeeting = require('./core/join-meeting');
 dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
 /* 👋 AutoBen - Bot Code start from Here 👇 */
-
-module.exports = async function init(){
+ async function init(){
 
     if(process.env.EMAIL.length == 0 || process.env.PASSWORD.length == 0) 
     return Promise.reject(new Error("Error: Email or Password is Empty!"));
@@ -27,7 +26,7 @@ module.exports = async function init(){
         channel: 'msedge',
         devtools: false
     });
-    
+
     // Define Browser Properties
     const context = await browser.newContext({
         permissions: ['microphone','camera','geolocation'],
@@ -37,9 +36,9 @@ module.exports = async function init(){
         // storageState: './config/state.json',
     });
 
-    // Define Context    
+    // Define Context
     await context.route('**/*', route => route.continue());
-    
+
     // Setup Page
     const page = await context.newPage();
 
@@ -49,7 +48,7 @@ module.exports = async function init(){
     async function callOpenBrowser(page){
 
         await openBrowser(page).then( data => {
-            
+
             log(chalk.green("Signed In Succesfully 🔐"));
             searchTeams(data);
 
@@ -77,9 +76,9 @@ module.exports = async function init(){
             var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
             teams = JSON.parse(data);
             var allMeetings =[];
-            
+
             for(let team in teams){
-                
+
                 const channels = teams[team].channels;
                 let meeting;
 
@@ -97,7 +96,7 @@ module.exports = async function init(){
                             }
                         }
                     });
-                
+
                     if(meeting) allMeetings.push(meeting);
                 }
             }
@@ -108,15 +107,16 @@ module.exports = async function init(){
     }
 
     async function passToLogic(meetings){
-        
+
         decideMeeting(meetings).then( decidedMeeting => {
-            
+
             log(chalk.cyanBright("Decided Meeting 🤓"));
             joinMeeting(decidedMeeting, page);
 
         }).catch( error => {
                 console.log(error)
-            });
+        });
     }
-
 };
+
+init();
