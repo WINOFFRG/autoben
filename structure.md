@@ -5,14 +5,18 @@ button
     click mic
     click people
     click raise hand
+    click assignments
 
-actions
+actions/tasks
     get meetings
     get teams
     get members
     decide meeting
     capture request
+    join meeting
     leave meeting
+    get due assignments
+    switch to list view (optional)
 
 init
     open browser
