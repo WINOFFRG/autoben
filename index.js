@@ -23,7 +23,7 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
     const browser = await chromium.launch({ 
         args: ["--start-maximized"],
         headless: false,
-        channel: 'msedge',
+        channel: 'chrome',
         devtools: false
     });
 
