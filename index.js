@@ -10,6 +10,7 @@ const findTeamsNChannel = require('./core/find-teams');
 const searchMeetings = require('./core/search-meetings');
 const decideMeeting = require('./core/decide-meeting');
 const joinMeeting = require('./core/join-meeting');
+const leaveMeeting = require('./core/leave-meeting')
 
 dotenv.config({path:  path.join( __dirname, '../config/config.env')});
 
@@ -57,8 +58,11 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
             });
     }
 
+    let tempTeamData = "";
 
     async function searchTeams(data){
+
+        tempTeamData = data;
 
         if(data == undefined || data.length == 0) 
             return new Error("⚠ There was a problem in reading Data");
@@ -71,47 +75,53 @@ dotenv.config({path:  path.join( __dirname, '../config/config.env')});
             }).catch(  error => {
                     console.log(error);
             });
-        } else{
-
-            var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
-            teams = JSON.parse(data);
-            var allMeetings =[];
-
-            for(let team in teams){
-
-                const channels = teams[team].channels;
-                let meeting;
-
-                for(let channel in channels){
-                    await searchMeetings(channels[channel], page).then( meetings => {
-
-                        if(meetings.length != 0) 
-                        {
-                            console.log(`Found Meetings 🤝 in ${teams[team].displayName} 👉 ${channels[channel].displayName} channel`);
-                            // console.log(meetings);
-                        
-                            meeting = {
-                                pageUri : `https://teams.microsoft.com/_#/school/conversations/${channels[channel].displayName}?threadId=${channels[channel].id}&ctx=channel`,
-                                meetings : meetings   
-                            }
-                        }
-                    });
-
-                    if(meeting) allMeetings.push(meeting);
-                }
-            }
-
-            passToLogic(allMeetings);
         }
+
+        var data = fs.readFileSync('./config/filtered-teams.json', {encoding:'utf8', flag:'r'});
+        teams = JSON.parse(data);
+        var allMeetings =[];
+
+        for(let team in teams){
+
+            const channels = teams[team].channels;
+            let meeting;
+
+            for(let channel in channels){
+                await searchMeetings(channels[channel], page).then( meetings => {
+
+                    if(meetings.length != 0) 
+                    {
+                        console.log(`Found Meetings 🤝 in ${teams[team].displayName} 👉 ${channels[channel].displayName} channel`);
+                        // console.log(meetings);
+                    
+                        meeting = {
+                            pageUri : `https://teams.microsoft.com/_#/school/conversations/${channels[channel].displayName}?threadId=${channels[channel].id}&ctx=channel`,
+                            meetings : meetings   
+                        }
+                    }
+                });
+
+                if(meeting) allMeetings.push(meeting);
+            }
+        }
+
+        passToLogic(allMeetings);
         // await context.storageState({ path: './config/state.json' });
     }
 
     async function passToLogic(meetings){
 
-        decideMeeting(meetings).then( decidedMeeting => {
+        decideMeeting(meetings).then( async (decidedMeeting) => {
 
             log(chalk.cyanBright("Decided Meeting 🤓"));
-            joinMeeting(decidedMeeting, page);
+            await joinMeeting(decidedMeeting, page);
+
+            log(chalk.blueBright("Now I wil leave the meeting in 30 sec😌"));
+            await page.waitForTimeout(30000);
+            
+            await leaveMeeting(decidedMeeting, page);
+
+            searchTeams(tempTeamData);
 
         }).catch( error => {
                 console.log(error)

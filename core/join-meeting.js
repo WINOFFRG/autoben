@@ -37,5 +37,6 @@ module.exports = async function joinMeeting(meeting, page){
 
     console.log("Joined Meeting Successfully 🎉🥳");
 
+    return Promise.resolve("Joined");
     // document.querySelector('.buttons-container').querySelectorAll('toggle-button')[0].querySelector('.ts-toggle-button').setAttribute('aria-pressed', 'true')
 }

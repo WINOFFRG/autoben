@@ -8,10 +8,12 @@ button
     click assignments
 
 actions/tasks
+    signin to account
     get meetings
     get teams
     get members
     decide meeting
+    sync teams
     capture request
     join meeting
     leave meeting
